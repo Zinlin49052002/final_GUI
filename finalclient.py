@@ -85,7 +85,7 @@ def send(event = None, data = ""):
     client.send(encrypt(data, password))
 
 def sentMsg(msg):
-    smsg={'to':'et','msg':msg,"from":superuser}
+    smsg={'to':'zmm','msg':msg,"from":superuser}
     smsg = json.dumps(smsg)
     send(data = smsg)
 
@@ -296,12 +296,12 @@ def chatFrame():
     def cl(fom,mg):
         if fom=='me':
             t=Label(f, text =mg ,bg='green')
-            t.pack(side=TOP,anchor='ne',padx=500,ipadx=40)
+            t.pack(side=TOP,anchor='e',ipadx=40)
         elif fom=='other':
             t=Label(f,text=mg)
-            t.pack(side=TOP,sticky='w')
+            t.pack(side=TOP,anchor='w',ipadx=40,padx=900)
     
-    cv.create_window((0,0), window = f,anchor='n')
+    cv.create_window((0,0), window = f,anchor='e')
     
     cv.pack(side = 'left', fill = 'both', expand = True)
     sbar.pack(side = 'right', fill = 'y')

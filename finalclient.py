@@ -72,10 +72,7 @@ def receive():
             elif msg["to"] == superuser:
                 global message
                 message=msg['msg']
-                msgList.append('other')
-                msList.append(message)
-                reFrash(wrapper_frame,scrollable_frame(msgShowFrame,bg))
-                print(msg['msg'])
+                cl('other',message)
             # Resiver Going Offline
             elif msg["to"] == "offline":
                 print(msg["msg"])
@@ -285,67 +282,48 @@ def chatFrame():
     msgShowFrame=Frame(chatFrame,bg=bg,width=1000,height=400)
     
 
-    messages_frame = Frame(msgShowFrame)
+    
     my_msg = StringVar()  # For the messages to be sent.
     my_msg.set("Type your messages here.")
     global scrollable_frame
 
-    def scrollable_frame(parent_widget, background_color):
-        global wrapper_frame
-        wrapper_frame=LabelFrame(parent_widget, highlightbackground=background_color, highlightcolor=background_color, highlightthickness=3, bg=background_color,width=1000)
-        my_canvas = Canvas(wrapper_frame, bg=background_color,width=1000,height=500)
-        my_canvas.pack(side="left", fill="both", expand="yes")
-        yscrollbar = Scrollbar(wrapper_frame, orient='vertical', width=13, command=my_canvas.yview)
-        yscrollbar.pack(side="right", fill="y")
-        my_canvas.configure(yscrollcommand=yscrollbar.set)
-        my_canvas.bind("<Configure>", lambda event: my_canvas.configure(scrollregion=my_canvas.bbox('all')))
-        global my_frame 
-        my_frame = Frame(my_canvas,bg=bg,width=500) # insert the user display label object in here
-        #I created two lists one is seprate you or other and one is msg
-        n=-1
-        
-        for i in msgList:
-            n+=1
-            if 'you' in i:
-                
-
-                Label(my_frame,bg=bg,text=msList[n]).pack(side=TOP,anchor='e',padx=900,pady=10)
-            elif 'other' in i:
-                Label(my_frame,bg=bg,text=msList[n]).pack(side=TOP,anchor='w',pady=10)
-
-            
-            
-            
-
-        my_canvas.create_window((0, 0), window=my_frame, anchor="nw")
-        wrapper_frame.pack(fill="both", expand="yes")
-        my_canvas.update_idletasks()
-        my_canvas.yview_moveto("1.0")
-        wrapper_frame.update()
-
-
-        return my_frame
-    scrollable_frame(msgShowFrame,bg)
+    cv = Canvas(msgShowFrame,bg='blue',width=1000,height=400)
+    sbar = Scrollbar(msgShowFrame, command = cv.yview)
+    cv.config(yscrollcommand = sbar.set)
+    f = Frame(cv,bg='red',width=1000,height=400)
+    
+    global cl
+    def cl(fom,mg):
+        if fom=='me':
+            t=Label(f, text =mg ,bg='green')
+            t.pack(side=TOP,anchor='ne',padx=500,ipadx=40)
+        elif fom=='other':
+            t=Label(f,text=mg)
+            t.pack(side=TOP,sticky='w')
+    
+    cv.create_window((0,0), window = f,anchor='n')
+    
+    cv.pack(side = 'left', fill = 'both', expand = True)
+    sbar.pack(side = 'right', fill = 'y')
+    root.bind("<Configure>", lambda e: cv.config(scrollregion = cv.bbox('all')))
+    
+    
     #text frame
     sentMsgFrame=Frame(chatFrame,bg=bg,width=1000,height=200)
     global sentMsgEntry
     MessageText=Text(sentMsgFrame,width=17,height=3,exportselection=0,wrap=CHAR)
     global reFrash
-    def reFrash(old, new):
-        old.destroy()
-        new
+    
     def sent():
         
         global o
         o=MessageText.get(1.0,END)
-        msList.append(o)
-
+        cl('me',o)
         
-        msgList.append('you')
-        MessageText.delete(1.0,END)
-        wrapper_frame.update_idletasks()
+        
         sentMsg(o)
-        reFrash(wrapper_frame,scrollable_frame(msgShowFrame,bg))
+        MessageText.delete(1.0,END)
+        
 
 
 
@@ -360,7 +338,7 @@ def chatFrame():
     msgShowFrame.pack(side=TOP)
     
     
-    sentMsgFrame.pack(side=BOTTOM)
+    sentMsgFrame.pack(side=BOTTOM,pady=50)
     
     # sentMsgButton.pack(side=RIGHT,ipady=10)
     chatFrame.pack(side = LEFT,padx=30)
